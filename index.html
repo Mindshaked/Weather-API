@@ -13,55 +13,6 @@
   <button type="submit" form="locationForm" value="Submit">Check</button>
 
   <div id="weather"> </div>
-  <script>
-
-const weather = document.getElementById("weather");
-const locationForm = document.getElementById("locationForm");
-
-//form for the user to input location
-locationForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    let location = document.getElementById("location");
-
-    if (location.value == "") {
-      alert("Make sure to input a valid location");
-    } else {
-      console.log(location.value);
-      getWeather(location.value);
-    }
-
-    location.value = "";
-
-});
-
-
-    //get location coordinates
-    async function getLocation(locationSearch){
-
-        const response = await fetch('https://nominatim.openstreetmap.org/search?q=' + locationSearch + '&format=json&addressdetails=1&limit=1&polygon_svg=1', {mode: 'cors'});
-        const locationData = await response.json();
-        const locationLatitude = locationData[0].lat;
-        const locationLongitude = locationData[0].lon;
-        return [locationLatitude, locationLongitude];
-    }
-
-    console.log("coordinates" + getLocation())
-    
-
-    //get the weather data from the location
-    async function getWeather(locationSearch){
-        const coordinates = await getLocation(locationSearch);
-        const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + coordinates[0] + '&longitude=' + coordinates[1] + '&hourly=temperature_2m&current_weather=true', {mode: 'cors'});
-        const weatherData = await response.json();
-        weather.innerHTML = weatherData.current_weather.temperature;
-    }
-
-    
-    
-
-
-
-  </script>
+  <script src="script.js"> </script>
 </body>
 </html>
