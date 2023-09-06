@@ -6,6 +6,39 @@ const weatherCode = document.createElement("div");
 weatherCode.setAttribute("id", "weatherCode");
 const dayOrNight = document.createElement("div");
 dayOrNight.setAttribute("id", "day-or-night");
+const forecastSlots = document.createElement("div");
+forecastSlots.setAttribute("id", "forecast");
+const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const weatherCodeLegend = {
+    0: "Clear Sky",
+    1: "Mainly clear",
+    2: "Partly cloudy",
+    3: "Overcast",
+    45: "Fog",
+    48: "Depositing Rime Fog",
+    51: "Light Drizzle",
+    53: "Moderate Drizzle",
+    55: "Dense Drizzle",
+    56: "Light Freezing Drizzle",
+    57: "Dense Freezing Drizzle",
+    61: "Slight Rain",
+    63: "Moderate Rain",
+    65: "Heavy Rain",
+    66: "Light Freezing Rain",
+    67: "Heavy Freezing Rain",
+    71: "Slight Snow fall",
+    73: "Moderate Snow fall",
+    75: "Heavy Snow fall",
+    77: "Snow grains",
+    80: "Slight Rain shower",
+    81: "Moderate Rain shower",
+    82: "Violent Rain shower",
+    85: "Slight show shower",
+    86: "Heavy snow shower",
+    95: "Thunderstorm",
+    96: "Thunderstorm",
+    99: "Thunderstorm"
+}
 
 weather.appendChild(temperature);
 weather.appendChild(weatherCode);
@@ -31,11 +64,8 @@ locationForm.addEventListener("submit", (e) => {
 //turns code into the corresponding weather icon
 
 function getWeatherSymbol(weatherCode){
-    if (weatherCode == 1){
-
-    } else if(weatherCode == 2){
-
-    }
+    const actualWeather = weatherCodeLegend[weatherCode]
+    return actualWeather;
 }
 
 
@@ -50,7 +80,17 @@ function getForecast(daysArray){
         day.className = "day";
         const date = document.createElement("div");
         date.className = "date";
-        date.innerHTML = daysArray.time[i];
+
+        let dateNumber = daysArray.time[i];
+        console.log(dateNumber)
+        let formatedDate = dateNumber.replaceAll("-", ",");
+        dateObject = new Date(formatedDate)
+        console.log(dateObject);
+
+        let dateName = weekday[dateObject.getDay()];
+        console.log(dateName)
+        date.innerHTML = dateName;
+       
         const maxTemp = document.createElement("div");
         maxTemp.className = "maxTemp";
         maxTemp.innerHTML = daysArray.temperature_2m_max[i];
@@ -98,7 +138,7 @@ function getDayOrNight(code){
         console.log("weather data" + JSON.stringify(weatherData));
         console.log(weatherData);
         temperature.innerHTML = "Temperature: " + weatherData.current_weather.temperature;
-        weatherCode.innerHTML = "Weather: " + weatherData.current_weather.weathercode;
+        weatherCode.innerHTML = "Weather: " + getWeatherSymbol(weatherData.current_weather.weathercode);
         dayOrNight.innerHTML = getDayOrNight(weatherData.current_weather.is_day);
         const days = weatherData.daily;
         getForecast(days)
