@@ -8,6 +8,12 @@ const dayOrNight = document.createElement("div");
 dayOrNight.setAttribute("id", "day-or-night");
 const forecastSlots = document.createElement("div");
 forecastSlots.setAttribute("id", "forecast");
+const todayForecast = document.createElement("div");
+todayForecast.setAttribute("id", "todayForecast")
+
+
+
+// weather code legend for the type of weather
 const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const weatherCodeLegend = {
     0: "Clear Sky",
@@ -40,9 +46,10 @@ const weatherCodeLegend = {
     99: "Thunderstorm"
 }
 
-weather.appendChild(temperature);
-weather.appendChild(weatherCode);
-weather.appendChild(dayOrNight);
+todayForecast.appendChild(temperature);
+todayForecast.appendChild(weatherCode);
+todayForecast.appendChild(dayOrNight);
+weather.appendChild(todayForecast)
 
 //form for the user to input location
 locationForm.addEventListener("submit", (e) => {
@@ -53,6 +60,9 @@ locationForm.addEventListener("submit", (e) => {
     if (location.value == "") {
       alert("Make sure to input a valid location");
     } else {
+      if (forecastSlots !== null){
+      removeAllChildNodes(forecastSlots);
+    } 
       console.log(location.value);
       getWeather(location.value);
     }
@@ -60,6 +70,14 @@ locationForm.addEventListener("submit", (e) => {
     location.value = "";
 
 });
+
+//function to remove the forecast elements after searching again
+
+function removeAllChildNodes(parent){
+    while (parent.firstChild){
+        parent.removeChild(parent.firstChild);
+    }
+}
 
 //turns code into the corresponding weather icon
 
@@ -99,7 +117,8 @@ function getForecast(daysArray){
         minTemp.innerHTML = daysArray.temperature_2m_min[i];
         console.log(daysArray[i])
 
-        weather.appendChild(day);
+        weather.appendChild(forecastSlots);
+        forecastSlots.appendChild(day)
         day.appendChild(date);
         day.appendChild(maxTemp);
         day.appendChild(minTemp);
