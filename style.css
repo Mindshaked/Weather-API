@@ -1,0 +1,47 @@
+html{
+    background-color: gray;
+}
+
+#container {
+    height: 100vh;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+}
+
+#form-container{
+    display: flex;
+    grid-column: 3/4;
+    grid-row: 3/4;
+    justify-content: center;
+    align-items: center;
+}
+
+#check-button{
+    border-style: none;
+    height: 1.5rem;
+    width: 5rem;
+    margin-left: 0.5rem;
+}
+
+#todayForecast{
+    display: flex;
+    flex-direction: column;
+    grid-column: 3/4;
+    grid-row: 2/3;
+    justify-content: center;
+    align-items: center;
+}
+
+#forecast{
+    grid-column: 1/6;
+    grid-row: 5/6;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.day{
+    width: 20%;
+    padding: 2rem; 
+}

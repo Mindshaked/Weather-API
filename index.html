@@ -2,17 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Document</title>
+  <title>Weather</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+
 </head>
 <body>
-  <form id="locationForm">
-    <label for="location">Location:</label>
-    <input type="text" id="location" name="city">
-  </form>
 
-  <button type="submit" form="locationForm" value="Submit">Check</button>
+<div id="container">
+
+    <div id="form-container">
+      <form id="locationForm">
+        <label for="location"></label>
+        <input placeholder="Enter a location" type="text" id="location" name="city">
+      </form>
+
+      <button type="submit" form="locationForm" value="Submit" id="check-button">Check</button>
+
+
+
+  </div>
 
   <div id="weather"> </div>
+
+</div>
   <script src="script.js"> </script>
 </body>
 </html>

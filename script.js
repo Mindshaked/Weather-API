@@ -1,7 +1,10 @@
+const cityName = document.createElement("div");
+cityName.setAttribute("id", "city-name");
 const weather = document.getElementById("weather");
 const locationForm = document.getElementById("locationForm");
 const temperature = document.createElement("div");
 temperature.setAttribute("id", "temperature");
+
 const weatherCode = document.createElement("div");
 weatherCode.setAttribute("id", "weatherCode");
 const dayOrNight = document.createElement("div");
@@ -10,6 +13,8 @@ const forecastSlots = document.createElement("div");
 forecastSlots.setAttribute("id", "forecast");
 const todayForecast = document.createElement("div");
 todayForecast.setAttribute("id", "todayForecast")
+const container = document.getElementById("container");
+
 
 
 
@@ -46,10 +51,11 @@ const weatherCodeLegend = {
     99: "Thunderstorm"
 }
 
+todayForecast.appendChild(cityName);
 todayForecast.appendChild(temperature);
 todayForecast.appendChild(weatherCode);
 todayForecast.appendChild(dayOrNight);
-weather.appendChild(todayForecast)
+container.appendChild(todayForecast)
 
 //form for the user to input location
 locationForm.addEventListener("submit", (e) => {
@@ -62,8 +68,9 @@ locationForm.addEventListener("submit", (e) => {
     } else {
       if (forecastSlots !== null){
       removeAllChildNodes(forecastSlots);
-    } 
+        } 
       console.log(location.value);
+      location.value.toLowerCase();
       getWeather(location.value);
     }
 
@@ -100,6 +107,9 @@ function getForecast(daysArray){
         date.className = "date";
 
         let dateNumber = daysArray.time[i];
+        const dateNumberSlot = document.createElement("div");
+        dateNumberSlot.className = "date-number";
+        dateNumberSlot.innerHTML = dateNumber;
         console.log(dateNumber)
         let formatedDate = dateNumber.replaceAll("-", ",");
         dateObject = new Date(formatedDate)
@@ -117,9 +127,10 @@ function getForecast(daysArray){
         minTemp.innerHTML = daysArray.temperature_2m_min[i];
         console.log(daysArray[i])
 
-        weather.appendChild(forecastSlots);
+        container.appendChild(forecastSlots);
         forecastSlots.appendChild(day)
         day.appendChild(date);
+        day.appendChild(dateNumberSlot)
         day.appendChild(maxTemp);
         day.appendChild(minTemp);
     }
@@ -156,6 +167,9 @@ function getDayOrNight(code){
         const weatherData = await response.json();
         console.log("weather data" + JSON.stringify(weatherData));
         console.log(weatherData);
+        const locationString = locationSearch;
+        cityName.innerHTML = locationString.replace(locationString.charAt(), locationString.charAt().toUpperCase());
+        
         temperature.innerHTML = "Temperature: " + weatherData.current_weather.temperature;
         weatherCode.innerHTML = "Weather: " + getWeatherSymbol(weatherData.current_weather.weathercode);
         dayOrNight.innerHTML = getDayOrNight(weatherData.current_weather.is_day);
@@ -165,21 +179,3 @@ function getDayOrNight(code){
     
 
 
-    
-    /*
-
-    0 	Clear sky
-1, 2, 3 	Mainly clear, partly cloudy, and overcast
-45, 48 	Fog and depositing rime fog
-51, 53, 55 	Drizzle: Light, moderate, and dense intensity
-56, 57 	Freezing Drizzle: Light and dense intensity
-61, 63, 65 	Rain: Slight, moderate and heavy intensity
-66, 67 	Freezing Rain: Light and heavy intensity
-71, 73, 75 	Snow fall: Slight, moderate, and heavy intensity
-77 	Snow grains
-80, 81, 82 	Rain showers: Slight, moderate, and violent
-85, 86 	Snow showers slight and heavy
-95 * 	Thunderstorm: Slight or moderate
-96, 99 * 	Thunderstorm with slight and heavy hail
-
-*/
