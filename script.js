@@ -1,12 +1,22 @@
+
+
+    
+const backgroundImage = document.createElement("img");
+backgroundImage.setAttribute("id", "background-image");
 const cityName = document.createElement("div");
 cityName.setAttribute("id", "city-name");
 const weather = document.getElementById("weather");
 const locationForm = document.getElementById("locationForm");
 const temperature = document.createElement("div");
 temperature.setAttribute("id", "temperature");
-
+const wind = document.createElement("div");
+wind.setAttribute("id", "wind");
+const timeNow = document.createElement("div");
+timeNow.setAttribute("id", "time-now");
 const weatherCode = document.createElement("div");
 weatherCode.setAttribute("id", "weatherCode");
+const weatherIcon = document.createElement("img");
+weatherIcon.setAttribute("id", "weatherIcon");
 const dayOrNight = document.createElement("div");
 dayOrNight.setAttribute("id", "day-or-night");
 const forecastSlots = document.createElement("div");
@@ -14,6 +24,7 @@ forecastSlots.setAttribute("id", "forecast");
 const todayForecast = document.createElement("div");
 todayForecast.setAttribute("id", "todayForecast")
 const container = document.getElementById("container");
+
 
 
 
@@ -51,11 +62,46 @@ const weatherCodeLegend = {
     99: "Thunderstorm"
 }
 
+const weatherIconsLegend = {
+    0: "icons/sun.png",
+    1: "icons/sun.png",
+    2: "icons/cloudy.png",
+    3: "icons/cloudy.png",
+    45: "icons/mist.png",
+    48: "icons/mist.png",
+    51: "icons/bitrainy.png",
+    53: "icons/bitrainy.png",
+    55: "icons/bitrainy.png",
+    56: "icons/drizzle.png",
+    57: "icons/drizzle.png",
+    61: "icons/rainy.png",
+    63: "icons/rainy.png",
+    65: "icons/rainy.png",
+    66: "icons/rainy.png",
+    67: "icons/rainy.png",
+    71: "icons/snowy.png",
+    73: "icons/snowy.png",
+    75: "icons/snowy.png",
+    77: "icons/snowy.png",
+    80: "icons/drizzle.png",
+    81: "icons/drizzle.png",
+    82: "icons/drizzle.png",
+    85: "icons/drizzle.png",
+    86: "icons/drizzle.png",
+    95: "icons/storm.png",
+    96: "icons/storm.png",
+    99: "icons/storm.png"
+}
+
 todayForecast.appendChild(cityName);
+todayForecast.appendChild(weatherIcon);
+todayForecast.appendChild(timeNow)
 todayForecast.appendChild(temperature);
 todayForecast.appendChild(weatherCode);
 todayForecast.appendChild(dayOrNight);
+todayForecast.appendChild(wind);
 container.appendChild(todayForecast)
+container.appendChild(backgroundImage)
 
 //form for the user to input location
 locationForm.addEventListener("submit", (e) => {
@@ -88,15 +134,21 @@ function removeAllChildNodes(parent){
 
 //turns code into the corresponding weather icon
 
-function getWeatherSymbol(weatherCode){
-    const actualWeather = weatherCodeLegend[weatherCode]
-    return actualWeather;
+function getWeatherSymbol(weatherIcon){
+    const actualWeatherSymbol = weatherIconsLegend[weatherIcon];
+    return actualWeatherSymbol;
 }
 
 
+//turns code into the corresponding weather text
+function getWeatherCode(weatherCode){
+    const actualWeatherCode = weatherCodeLegend[weatherCode];
+    return actualWeatherCode;
+}
+
+
+
 // get the data for the 7 days forecast and show it
-
-
 
 function getForecast(daysArray){
 
@@ -119,20 +171,19 @@ function getForecast(daysArray){
         console.log(dateName)
         date.innerHTML = dateName;
        
-        const maxTemp = document.createElement("div");
-        maxTemp.className = "maxTemp";
-        maxTemp.innerHTML = daysArray.temperature_2m_max[i];
-        const minTemp = document.createElement("div");
-        minTemp.className = "minTemp";
-        minTemp.innerHTML = daysArray.temperature_2m_min[i];
-        console.log(daysArray[i])
-
+        const dailyWeather = document.createElement("img");
+        dailyWeather.className = "daily-weather";
+        dailyWeather.src = getWeatherSymbol(daysArray.weathercode[i])
+        const minmaxTemp = document.createElement("div");
+        minmaxTemp.className = "minmax-temp";
+        minmaxTemp.innerHTML = daysArray.temperature_2m_min[i] + "° - " + daysArray.temperature_2m_max[i] + "°";
         container.appendChild(forecastSlots);
         forecastSlots.appendChild(day)
+        day.appendChild(dailyWeather);
         day.appendChild(date);
         day.appendChild(dateNumberSlot)
-        day.appendChild(maxTemp);
-        day.appendChild(minTemp);
+        day.appendChild(minmaxTemp);
+        
     }
 }
 
@@ -159,23 +210,78 @@ function getDayOrNight(code){
 
     console.log("coordinates" + getLocation())
     
-
+    const image = document.createElement("img");
     //get the weather data from the location
     async function getWeather(locationSearch){
         const coordinates = await getLocation(locationSearch);
-        const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + coordinates[0] + '&longitude=' + coordinates[1] + '&hourly=is_day&daily=temperature_2m_max,temperature_2m_min&current_weather=true&timezone=Europe%2FBerlin', {mode: 'cors'});
+        const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + coordinates[0] + '&longitude=' + coordinates[1] + '&hourly=is_day&daily=temperature_2m_max,temperature_2m_min,weathercode&current_weather=true&timezone=Europe%2FBerlin', {mode: 'cors'});
         const weatherData = await response.json();
         console.log("weather data" + JSON.stringify(weatherData));
         console.log(weatherData);
-        const locationString = locationSearch;
+        const locationString = locationSearch.toLowerCase();
         cityName.innerHTML = locationString.replace(locationString.charAt(), locationString.charAt().toUpperCase());
-        
-        temperature.innerHTML = "Temperature: " + weatherData.current_weather.temperature;
-        weatherCode.innerHTML = "Weather: " + getWeatherSymbol(weatherData.current_weather.weathercode);
-        dayOrNight.innerHTML = getDayOrNight(weatherData.current_weather.is_day);
+
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const actualTime = "Today, " + hours + ":" + String(minutes).padStart(2, "0");;
+
+       
+
+        timeNow.innerHTML = actualTime;
+        temperature.innerHTML = weatherData.current_weather.temperature + "°";
+        weatherIcon.src = getWeatherSymbol(weatherData.current_weather.weathercode);
+        weatherCode.innerHTML = getWeatherCode(weatherData.current_weather.weathercode);
+        let dayOrNight = getDayOrNight(weatherData.current_weather.is_day)
+        dayOrNight.innerHTML = getDayOrNight;
+        wind.innerHTML = "Wind speed: " + weatherData.current_weather.windspeed + " k/m";
         const days = weatherData.daily;
         getForecast(days)
+
+        let imageCity = getBackgroundImage(locationString);
+        imageCity.then(function(result) {
+            document.body.style.backgroundImage = "url(" + "\"" + result + "\")";
+            console.log(result)
+        });
+
+      
+        
     }
     
+    /*
+    .then(photo =>{
+        const image = document.createElement("img");
+        image.src = photo.url;
+        container.appendChild(image);
+    })
 
+    */
 
+//get background image from pexels to set as background everytime someone searches for an image
+
+function getBackgroundImage(city){
+    return fetch("https://api.pexels.com/v1/search?query=" + city, {
+        headers: {
+            Authorization: "kMn4lrXsVXevvfh19tEJBPKEsTw1Pou8UEiG5Qb8hVGVovLcuAM1oy1f"
+        }
+    })
+    
+        .then(resp => {
+            return resp.json();
+        })
+        .then(data => {
+            const photo = data.photos[0].src.landscape
+           
+            return photo;
+           
+        })     
+        .catch((err => {
+            console.log(err);
+            throw err;
+        }))
+        
+        
+
+       
+      
+}
