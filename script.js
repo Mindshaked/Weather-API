@@ -1,8 +1,15 @@
 
 
     
-const backgroundImage = document.createElement("img");
-backgroundImage.setAttribute("id", "background-image");
+const background = document.body;
+/*background.style.backgroundImage = "url(\"/img/defaultbackground.jpeg\")";
+
+*/
+
+console.log(background)
+
+
+
 const cityName = document.createElement("div");
 cityName.setAttribute("id", "city-name");
 const weather = document.getElementById("weather");
@@ -93,6 +100,7 @@ const weatherIconsLegend = {
     99: "icons/storm.png"
 }
 
+container.appendChild(forecastSlots);
 todayForecast.appendChild(cityName);
 todayForecast.appendChild(weatherIcon);
 todayForecast.appendChild(timeNow)
@@ -100,8 +108,9 @@ todayForecast.appendChild(temperature);
 todayForecast.appendChild(weatherCode);
 todayForecast.appendChild(dayOrNight);
 todayForecast.appendChild(wind);
+todayForecast.style.visibility = "hidden";
 container.appendChild(todayForecast)
-container.appendChild(backgroundImage)
+
 
 //form for the user to input location
 locationForm.addEventListener("submit", (e) => {
@@ -115,6 +124,11 @@ locationForm.addEventListener("submit", (e) => {
       if (forecastSlots !== null){
       removeAllChildNodes(forecastSlots);
         } 
+
+      if (todayForecast.style.visibility == "hidden"){
+        todayForecast.style.visibility = "visible";
+      } 
+
       console.log(location.value);
       location.value.toLowerCase();
       getWeather(location.value);
@@ -155,6 +169,7 @@ function getForecast(daysArray){
     for (i=0; i<daysArray.time.length; i++){
         const day = document.createElement("div");
         day.className = "day";
+        day.classList.add("animate-bottom")
         const date = document.createElement("div");
         date.className = "date";
 
@@ -177,7 +192,7 @@ function getForecast(daysArray){
         const minmaxTemp = document.createElement("div");
         minmaxTemp.className = "minmax-temp";
         minmaxTemp.innerHTML = daysArray.temperature_2m_min[i] + "° - " + daysArray.temperature_2m_max[i] + "°";
-        container.appendChild(forecastSlots);
+        
         forecastSlots.appendChild(day)
         day.appendChild(dailyWeather);
         day.appendChild(date);
@@ -210,12 +225,14 @@ function getDayOrNight(code){
 
     console.log("coordinates" + getLocation())
     
-    const image = document.createElement("img");
+    
     //get the weather data from the location
     async function getWeather(locationSearch){
+        showLoader();
         const coordinates = await getLocation(locationSearch);
         const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + coordinates[0] + '&longitude=' + coordinates[1] + '&hourly=is_day&daily=temperature_2m_max,temperature_2m_min,weathercode&current_weather=true&timezone=Europe%2FBerlin', {mode: 'cors'});
         const weatherData = await response.json();
+        showLoader();
         console.log("weather data" + JSON.stringify(weatherData));
         console.log(weatherData);
         const locationString = locationSearch.toLowerCase();
@@ -238,50 +255,16 @@ function getDayOrNight(code){
         const days = weatherData.daily;
         getForecast(days)
 
-        let imageCity = getBackgroundImage(locationString);
-        imageCity.then(function(result) {
-            document.body.style.backgroundImage = "url(" + "\"" + result + "\")";
-            console.log(result)
-        });
-
-      
-        
+ 
     }
     
-    /*
-    .then(photo =>{
-        const image = document.createElement("img");
-        image.src = photo.url;
-        container.appendChild(image);
-    })
-
-    */
-
-//get background image from pexels to set as background everytime someone searches for an image
-
-function getBackgroundImage(city){
-    return fetch("https://api.pexels.com/v1/search?query=" + city, {
-        headers: {
-            Authorization: "kMn4lrXsVXevvfh19tEJBPKEsTw1Pou8UEiG5Qb8hVGVovLcuAM1oy1f"
+   
+    //show loading animation until data is snow on screen
+    function showLoader(){
+        const loader = document.getElementById("loader");
+        if (loader.style.visibility == "visible"){
+            loader.style.visibility = "hidden";
+        } else {
+            loader.style.visibility = "visible";
         }
-    })
-    
-        .then(resp => {
-            return resp.json();
-        })
-        .then(data => {
-            const photo = data.photos[0].src.landscape
-           
-            return photo;
-           
-        })     
-        .catch((err => {
-            console.log(err);
-            throw err;
-        }))
-        
-        
-
-       
-      
-}
+    }
