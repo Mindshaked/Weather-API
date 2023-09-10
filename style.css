@@ -16,6 +16,24 @@ body {
     
 }
 
+#header{
+    grid-column: 3/4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#web-title{
+    font-size: 2rem;
+    font-weight: 700;
+    color: rgb(18, 129, 194);
+}
+
+#github{
+    font-size: 0.8rem;
+}
+
 #container{
     height: 100vh;
     display: grid;
