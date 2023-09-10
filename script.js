@@ -212,15 +212,42 @@ function getDayOrNight(code){
     }
 }
 
+// error meesage popup when not being able to find a location
+
+
+let error = document.createElement("div");
+error.setAttribute("id", "show-error");
+error.innerHTML = "Could not find the location";
+error.style.visibility = "hidden";
+todayForecast.appendChild(error)
+
+function showError(action){
+   
+    if (action == "show"){
+        error.style.visibility = "visible";
+        todayForecast.style.visibility = "hidden";
+    } else if(action == "hide"){
+        error.style.visibility = "hidden";
+        
+    } 
+   
+    
+}
+
+
 
     //get location coordinates
     async function getLocation(locationSearch){
-
+        try{
         const response = await fetch('https://nominatim.openstreetmap.org/search?q=' + locationSearch + '&format=json&addressdetails=1&limit=1&polygon_svg=1', {mode: 'cors'});
         const locationData = await response.json();
         const locationLatitude = locationData[0].lat;
         const locationLongitude = locationData[0].lon;
         return [locationLatitude, locationLongitude];
+        } catch(err){
+            console.log("Could not find coordinates")
+            return;
+        }
     }
 
     console.log("coordinates" + getLocation())
@@ -228,10 +255,14 @@ function getDayOrNight(code){
     
     //get the weather data from the location
     async function getWeather(locationSearch){
+        showError("hide")
         showLoader();
+
+        try{
         const coordinates = await getLocation(locationSearch);
         const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + coordinates[0] + '&longitude=' + coordinates[1] + '&hourly=is_day&daily=temperature_2m_max,temperature_2m_min,weathercode&current_weather=true&timezone=Europe%2FBerlin', {mode: 'cors'});
         const weatherData = await response.json();
+        
         showLoader();
         console.log("weather data" + JSON.stringify(weatherData));
         console.log(weatherData);
@@ -243,7 +274,7 @@ function getDayOrNight(code){
         const minutes = now.getMinutes();
         const actualTime = "Today, " + hours + ":" + String(minutes).padStart(2, "0");;
 
-       
+        showError("hide")
 
         timeNow.innerHTML = actualTime;
         temperature.innerHTML = weatherData.current_weather.temperature + "°";
@@ -253,8 +284,16 @@ function getDayOrNight(code){
         dayOrNight.innerHTML = getDayOrNight;
         wind.innerHTML = "Wind speed: " + weatherData.current_weather.windspeed + " k/m";
         const days = weatherData.daily;
-        getForecast(days)
 
+
+        showError()
+        getForecast(days)
+    } catch (err){
+        console.log("Could not find this place");
+        showLoader();
+        showError("show")
+        return error;
+    }
  
     }
     

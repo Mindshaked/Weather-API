@@ -70,6 +70,7 @@ body {
 #temperature{
     font-size: 5rem;
     margin-bottom: 1rem;
+    font-weight: 800;
 }
 
 #forecast{
@@ -152,3 +153,9 @@ body {
     to{ bottom:0; opacity:1}
 }
 
+
+#show-error{
+    color: red;
+    font-weight: 800;
+    font-size: 0.8rem;
+}
